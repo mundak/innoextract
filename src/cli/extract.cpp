@@ -35,8 +35,8 @@
 #include <boost/unordered_map.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/filesystem/operations.hpp>
-#include <boost/ptr_container/ptr_map.hpp>
-#include <boost/ptr_container/ptr_vector.hpp>
+//#include <boost/ptr_container/ptr_map.hpp>
+//#include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/range/size.hpp>
 #include <boost/lexical_cast.hpp>
 
@@ -1170,7 +1170,7 @@ void process_file(const fs::path & installer, const extract_options & o) {
 
 	progress extract_progress(total_size);
 
-	typedef boost::ptr_map<const processed_file *, file_output> multi_part_outputs;
+	typedef std::map<const processed_file *, file_output*> multi_part_outputs;
 	multi_part_outputs multi_outputs;
 
 	BOOST_FOREACH(const Chunks::value_type & chunk, chunks) {
@@ -1299,7 +1299,7 @@ void process_file(const fs::path & installer, const extract_options & o) {
 			file_source = stream::file_reader::get(*chunk_source, file, &checksum);
 
 			// Open output files
-			boost::ptr_vector<file_output> single_outputs;
+			std::vector<file_output *> single_outputs;
 			std::vector<file_output *> outputs;
 			BOOST_FOREACH(const output_location & output_loc, output_locations) {
 				const processed_file * fileinfo = output_loc.first;
@@ -1321,7 +1321,7 @@ void process_file(const fs::path & installer, const extract_options & o) {
 					if(!output) {
 						output = new file_output(o.output_dir, fileinfo, o.extract);
 						if(fileinfo->is_multipart()) {
-							multi_outputs.insert(fileinfo, output);
+							multi_outputs.emplace(fileinfo, output);
 						} else {
 							single_outputs.push_back(output);
 						}
@@ -1331,7 +1331,7 @@ void process_file(const fs::path & installer, const extract_options & o) {
 
 					output->seek(output_loc.second);
 
-				} catch(boost::bad_pointer &) {
+				} catch(...) {
 					// should never happen
 					std::terminate();
 				}

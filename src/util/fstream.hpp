@@ -31,14 +31,14 @@
 
 #include <boost/filesystem/fstream.hpp>
 
-#ifdef __ANDROID__
+#if 0 //def __ANDROID__
 #include "android_streams.hpp"
 #endif
 
 namespace util {
 
 typedef boost::filesystem::ifstream ifstream;
-#ifndef __ANDROID__
+#if 1 // ndef __ANDROID__
 typedef boost::filesystem::ofstream ofstream;
 #else
 typedef android_ofstream ofstream;

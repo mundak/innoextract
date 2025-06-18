@@ -24,6 +24,8 @@
 
 #include "util/console.hpp"
 
+#include <android/log.h>
+
 bool logger::debug = false;
 bool logger::quiet = false;
 
@@ -49,7 +51,8 @@ logger::~logger() {
 			break;
 		}
 	}
-	
+
+    __android_log_write(ANDROID_LOG_INFO, "innoextract", buffer.str().c_str());
 }
 
 std::streambuf * warning_suppressor::set_streambuf(std::streambuf * streambuf) {

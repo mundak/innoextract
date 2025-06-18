@@ -636,7 +636,7 @@ static void dump_headers(std::istream & is, const setup::version & version, cons
 	}
 	
 	try {
-#ifdef __ANDROID__
+#if 0 //def __ANDROID__
         *ofs.stream() << stream::block_reader::get(is, version)->rdbuf();
 #else
         ofs << stream::block_reader::get(is, version)->rdbuf();

@@ -74,7 +74,7 @@
 #include "util/output.hpp"
 #include "util/time.hpp"
 
-#ifdef __ANDROID__
+#if 0 //def __ANDROID__
 #include "native_interface.hpp"
 #endif
 
@@ -135,7 +135,7 @@ class file_output : private boost::noncopyable {
 
 	fs::path path_;
 	const processed_file * file_;
-#ifdef __ANDROID__
+#if 0 //def __ANDROID__
 	util::ofstream stream_;
 #else
 	util::fstream stream_;
@@ -617,7 +617,7 @@ bool print_file_info(const extract_options & o, const setup::info & info) {
 
 	const std::string & name = info.header.app_versioned_name.empty()
 							   ? info.header.app_name : info.header.app_versioned_name;
-#ifdef __ANDROID__
+#if 0 //def __ANDROID__
 	std::ostringstream versionStream;
 	versionStream << info.version;
 	updateName(name);
@@ -678,7 +678,7 @@ bool print_file_info(const extract_options & o, const setup::info & info) {
 
 	if(o.gog_game_id) {
 		std::string id = gog::get_game_id(info);
-#ifdef __ANDROID__
+#if 0 //def __ANDROID__
 		if (!id.empty()) {
 			updateGogId(id);
 		}
@@ -925,7 +925,7 @@ void process_file(const fs::path & installer, const extract_options & o) {
 		throw std::runtime_error("Input file \"" + installer.string() + "\" is a directory!");
 	}
 
-#ifndef __ANDROID__
+#if 1 //ndef __ANDROID__
 	util::ifstream ifs;
 	try {
 		ifs.open(installer, std::ios_base::in | std::ios_base::binary);
@@ -934,7 +934,7 @@ void process_file(const fs::path & installer, const extract_options & o) {
 		}
 	} catch(...) {
 		throw std::runtime_error("Could not open file \"" + installer.string() + '"');
-
+    }
 #else
 	int fd = atoi(installer.filename().c_str());
 	io::file_descriptor_flags flags = io::file_descriptor_flags::never_close_handle;
@@ -1065,7 +1065,7 @@ void process_file(const fs::path & installer, const extract_options & o) {
 
 	processed_entries processed = filter_entries(o, info);
 
-#ifndef __ANDROID__
+#if 1 //ndef __ANDROID__
 	if(o.extract) {
 		create_output_directory(o);
 	}
@@ -1094,14 +1094,14 @@ void process_file(const fs::path & installer, const extract_options & o) {
 
 			}
 
-//			if(o.extract) {
-//				fs::path dir = o.output_dir / path;
-//				try {
-//					fs::create_directory(dir);
-//				} catch(...) {
-//					throw std::runtime_error("Could not create directory \"" + dir.string() + '"');
-//				}
-//			}
+			if(o.extract) {
+				fs::path dir = o.output_dir / path;
+				try {
+					fs::create_directory(dir);
+				} catch(...) {
+					throw std::runtime_error("Could not create directory \"" + dir.string() + '"');
+				}
+			}
 
 		}
 
@@ -1349,13 +1349,13 @@ void process_file(const fs::path & installer, const extract_options & o) {
 						if(!success) {
 							throw std::runtime_error("Error writing file \"" + output->path().string() + '"');
 						}
-						updateCurrentFile(output->path().string());
+						//updateCurrentFile(output->path().string());
 					}
 					extract_progress.update(boost::uint64_t(n));
 					output_size += boost::uint64_t(n);
 					running_total += boost::uint64_t(n);
 					//std::cout << "T$" << boost::lexical_cast<std::string>(running_total) << "$" << boost::lexical_cast<std::string>(total_size) << "$\n";
-					updateProgress(running_total, total_size);
+					//updateProgress(running_total, total_size);
 				}
 			}
 
@@ -1391,11 +1391,11 @@ void process_file(const fs::path & installer, const extract_options & o) {
 
 				// Adjust file timestamps
 				if (o.extract) {
-#ifdef __ANDROID__
+#if 0 //def __ANDROID__
 					output->close();
 #endif
 					if (o.preserve_file_times) {
-#ifndef __ANDROID__
+#if 1 //ndef __ANDROID__
 						output->close();
 #endif
 						if (!util::set_file_time(output->path(), filetime, data.timestamp_nsec)) {

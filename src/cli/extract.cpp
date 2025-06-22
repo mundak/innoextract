@@ -78,7 +78,7 @@
 //#include "native_interface.hpp"
 // eemu:
 extern "C" {
-	void ui_update_progress(const char* file_name, uint64_t extracted, uint64_t total);
+	bool ui_update_progress(const char* file_name, uint64_t extracted, uint64_t total);
 }
 
 #endif
@@ -1361,7 +1361,10 @@ void process_file(const fs::path & installer, const extract_options & o) {
 					output_size += boost::uint64_t(n);
 					running_total += boost::uint64_t(n);
 					//std::cout << "T$" << boost::lexical_cast<std::string>(running_total) << "$" << boost::lexical_cast<std::string>(total_size) << "$\n";
-					ui_update_progress(output_file.c_str(), running_total, total_size);
+					if (!ui_update_progress(output_file.c_str(), running_total, total_size))
+					{
+						throw std::runtime_error("User cancelled");
+					}
 				}
 			}
 
